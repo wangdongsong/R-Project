@@ -1,0 +1,10 @@
+atvtype - type of alternative fuel or advanced 
+vehicle
+barrels08 - annual petroleum consumption in barrels for 
+fuelType1 (1)
+barrelsA08 - annual petroleum consumption in barrels for 
+fuelType2 (1)
+charge120 - time to charge an electric vehicle in hours at 
+120 V
+charge240 - time to charge an electric vehicle in hours at 
+240 V
