@@ -25,4 +25,9 @@ sapply(train.data, function(df){
 
 require(Amelia)
 
+library("Amelia")
+
 missmap(train.data, main="Missing Map")
+
+
+
