@@ -7,6 +7,7 @@
 library(plyr, lib.loc = "E:/RPackage")
 library(ggplot2, lib.loc = "E:/RPackage")
 library(reshape2, lib.loc = "E:/RPackage")
+library(labeling, lib.loc = "E:/RPackage")
 
 dataPath <- getwd()
 
@@ -23,4 +24,51 @@ labels <- do.call(rbind, strsplit(readLines("E:/GitHub/R-Project/data/vehicles/v
 
 #head(labels)
 
-x <- readLines("E:/GitHub/R-Project/data/vehicles/varlabels.txt")
+#x <- readLines("E:/GitHub/R-Project/data/vehicles/varlabels.txt")
+
+#数据行数
+nrow(vehicles)
+#数据列数
+ncol(vehicles)
+#查看数据列的含义
+#这些变更名的含义可以在http://www.fueleconomy.gov/feg/ws/index.shtml#vehicle中详细查看
+names(vehicles)
+
+#查看数据中有多少年的数据
+length((unique(vehicles[,"year"])))
+
+#查看数据集中的起始年份和终止年份
+first_year <- min(vehicles[, "year"])
+last_year <- max(vehicles[, "year"])
+
+
+#查看燃料类型
+table(vehicles$fuelType1)
+
+#探索汽车使用的传动方式，缺失值使用NA表示
+vehicles$trany[vehicles$trany == ""] <- NA
+
+
+#trany是一系列文本，仅关注车辆的传动是手动还是自动，所以使用substr函数提取trany会前4个字符生成新的变量trany2
+vehicles$trany2 <- ifelse(substr(vehicles$trany, 1, 4) == "Auto", "Auto", "Manual")
+
+#最后，将这个新变量变成因子，使用table函数看不同类型传动方式记录各有多少
+vehicles$trany <- as.factor(vehicles$trany)
+table(vehicles$trany)
+
+#with说明默认使用vehicles数据集，不用再$符号使用数据
+with(vehicles, table(sCharger, year))
+
+
+#使用plyr和ggplot2探索数据集
+#首先看平均MPG是否随着时间有一个趋势上的变化，使用plyr的ddply函数操作vehicles数据集
+#按年份整合，对每个组计算highway、city和combine的燃油效率，该结果给一个新的数据框mpgByYr
+mpgByYr <- ddply(vehicles, ~year, summarise, avgMPG = mean(comb08), avgHghy = mean(highway08), avgCity = mean(city08))
+#对新数据框更好的了解，使用ggplot函数，用散点图绘制avgMPG和year之间的关系。
+#标明坐标轴的命名、图的标题，一级加上一个平滑的条件均值，geom_smooth()在图片中增加一个阴影的区域
+ggplot(mpgByYr, aes(year, avgMPG)) + geom_point() + geom_smooth() + xlab("Year") + ylab("Average MPG") + ggtitle("All cars")
+
+
+
+
+
