@@ -70,5 +70,23 @@ ggplot(mpgByYr, aes(year, avgMPG)) + geom_point() + geom_smooth() + xlab("Year")
 
 
 
+#非燃油汽车对数据有影响，所以构造新的数据集
+gasCars <- subset(vehicles, fuelType1 %in% c("Regular Gasoline", "Premium Gasoline", "Midgrade Gasoline") & fuelType2 == "" & atvType != "Hybrid")
+mpgByYr_Gas <- ddply(gasCars, ~year, summarise, avgMPG = mean(comb08))
+ggplot(mpgByYr_Gas, aes(year, avgMPG)) + geom_point() + geom_smooth() + xlab("Year") + ylab("Average MPG") + ggtitle("Gasoline cars")
+
+
+#是否近年来大马力的车产量降低了，如果是这样，可以解释这种增长，首先我们要明确是否大功率的汽车燃油效率更低
+#注意变量disp1，表示引擎的排量，单位为升
+typeof(gasCars$displ)
+#gasCars$displ <- as.numeric(gasCars$displ)
+#从散点图中看到引擎排量和燃油效率变量之间确实是负相关，小的车燃油效率会更高
+ggplot(gasCars, aes(displ, comb08)) + geom_point() + geom_smooth()
+
+
+#6、查看是否近几年生产了更多的小车，这样就可以解释燃油效率最近有大幅的提升
+avgCarSize <- ddply(gasCars, ~year, summarise, avgDisp1 = mean(gasCars$disp1))
+ggplot(avgCarSize, aes(year, avgDisp1)) + geom_point() + geom_smooth() + xlab("Year") + ylab("Average engine displacement(1)")
+
 
 
